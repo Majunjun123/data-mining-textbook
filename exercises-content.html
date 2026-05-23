@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>练习题 - 数据挖掘与分析</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-deep: #0b1622;
+            --bg-surface: #141f2e;
+            --bg-card: #1a2a3d;
+            --gold: #c9a96e;
+            --gold-light: #dcc090;
+            --gold-dim: #8b7348;
+            --text-primary: #e8e0d0;
+            --text-secondary: #a09888;
+            --text-muted: #6b6560;
+            --border: #1e3048;
+            --border-gold: rgba(201,169,110,0.25);
+            --green: #68c8a0;
+            --red: #d07060;
+            --radius: 14px;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background: var(--bg-deep);
+            background-image: radial-gradient(ellipse at 50% 0%, rgba(201,169,110,0.03) 0%, transparent 50%);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 2rem 1rem;
+        }
+        .quiz-container {
+            width: 100%;
+            max-width: 680px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 2rem 2rem 1.8rem;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.25);
+            position: relative;
+            overflow: hidden;
+        }
+        .quiz-container::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--gold-dim), transparent);
+        }
+        .quiz-title {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: var(--gold-light);
+            text-align: center;
+            letter-spacing: 2px;
+            margin-bottom: 0.2rem;
+        }
+        .quiz-subtitle {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+            margin-bottom: 1.2rem;
+        }
+
+        /* Progress */
+        .progress-wrap { margin-bottom: 1.5rem; }
+        .progress-bar-bg {
+            height: 4px;
+            background: var(--border);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .progress-bar-fill {
+            height: 100%;
+            border-radius: 4px;
+            background: linear-gradient(90deg, var(--gold-dim), var(--gold), var(--gold-light));
+            transition: width 0.5s cubic-bezier(0.4,0,0.2,1);
+        }
+        .progress-text {
+            text-align: right;
+            color: var(--text-muted);
+            font-size: 0.8rem;
+            margin-top: 6px;
+        }
+
+        /* Question */
+        .question-text {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            line-height: 1.7;
+            margin-bottom: 1.3rem;
+            letter-spacing: 0.5px;
+        }
+        .options-list { display: flex; flex-direction: column; gap: 10px; }
+        .option-btn {
+            width: 100%;
+            padding: 0.95rem 1.2rem;
+            text-align: left;
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            line-height: 1.5;
+        }
+        .option-btn:hover:not(.disabled) {
+            border-color: var(--gold-dim);
+            background: rgba(201,169,110,0.06);
+            color: var(--text-primary);
+            transform: translateX(4px);
+        }
+        .option-btn.disabled { cursor: default; pointer-events: none; }
+        .option-btn.correct {
+            background: rgba(104,200,160,0.12);
+            border-color: var(--green);
+            color: var(--green);
+        }
+        .option-btn.incorrect {
+            background: rgba(208,112,96,0.12);
+            border-color: var(--red);
+            color: var(--red);
+        }
+        .option-letter {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px; height: 28px;
+            border-radius: 50%;
+            border: 1px solid var(--border);
+            margin-right: 10px;
+            font-weight: 700;
+            font-size: 0.8rem;
+            flex-shrink: 0;
+            transition: all 0.3s;
+        }
+        .option-btn.correct .option-letter { border-color: var(--green); background: rgba(104,200,160,0.15); }
+        .option-btn.incorrect .option-letter { border-color: var(--red); background: rgba(208,112,96,0.15); }
+
+        /* Rationale */
+        .rationale {
+            margin-top: 10px;
+            padding: 0.85rem 1rem;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            line-height: 1.6;
+            display: none;
+        }
+        .rationale.show { display: block; }
+        .rationale.correct { background: rgba(104,200,160,0.06); color: #68c8a0; border: 1px solid rgba(104,200,160,0.15); }
+        .rationale.incorrect { background: rgba(208,112,96,0.06); color: #d07060; border: 1px solid rgba(208,112,96,0.15); }
+
+        /* Footer */
+        .quiz-footer { margin-top: 1.5rem; display: flex; justify-content: flex-end; }
+        .next-btn {
+            padding: 0.7rem 2rem;
+            background: linear-gradient(135deg, var(--gold-dim), var(--gold));
+            color: #0b1622;
+            border: none;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            font-family: inherit;
+            cursor: pointer;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            display: none;
+        }
+        .next-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(201,169,110,0.3); }
+
+        /* Results */
+        .results-wrap { text-align: center; display: none; }
+        .results-wrap h2 {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 1.6rem;
+            color: var(--gold-light);
+            margin-bottom: 0.8rem;
+        }
+        .score-ring {
+            width: 140px; height: 140px;
+            border-radius: 50%;
+            border: 3px solid var(--border-gold);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 1rem auto;
+            position: relative;
+        }
+        .score-value {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 3rem;
+            font-weight: 900;
+            color: var(--gold);
+        }
+        .score-comment { color: var(--text-secondary); margin-bottom: 1.5rem; font-size: 0.95rem; }
+        .restart-btn {
+            padding: 0.7rem 2.5rem;
+            background: transparent;
+            border: 1px solid var(--gold-dim);
+            color: var(--gold);
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            font-family: inherit;
+            cursor: pointer;
+            letter-spacing: 1px;
+            transition: all 0.3s;
+        }
+        .restart-btn:hover { background: rgba(201,169,110,0.1); border-color: var(--gold); }
+
+        @media (max-width: 600px) {
+            .quiz-container { padding: 1.5rem 1rem; }
+            .quiz-title { font-size: 1.4rem; }
+            .question-text { font-size: 1rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container" id="quizBox">
+        <div id="quizHeader">
+            <h1 class="quiz-title">知识测验</h1>
+            <p class="quiz-subtitle">数据挖掘与分析 · 课后自测</p>
+            <div class="progress-wrap">
+                <div class="progress-bar-bg"><div id="progressBar" class="progress-bar-fill" style="width:0%"></div></div>
+                <p id="questionCounter" class="progress-text"></p>
+            </div>
+        </div>
+        <div id="quizBody">
+            <h2 id="questionText" class="question-text"></h2>
+            <div id="answerOptions" class="options-list"></div>
+        </div>
+        <div id="quizFooter" class="quiz-footer">
+            <button id="nextButton" class="next-btn">下一题</button>
+        </div>
+        <div id="resultsWrap" class="results-wrap">
+            <h2>测验完成</h2>
+            <p style="color:var(--text-muted);">你的得分</p>
+            <div class="score-ring"><span id="scoreText" class="score-value"></span></div>
+            <p id="scoreComment" class="score-comment"></p>
+            <button id="restartButton" class="restart-btn">重新开始</button>
+        </div>
+    </div>
+
+    <script>
+        var quizData = { questions: [
+            {
+                question: "CRISP-DM数据挖掘标准流程的正确阶段顺序是什么？",
+                answerOptions: [
+                    { text: "数据理解 → 业务理解 → 数据准备 → 建模 → 评估 → 部署", rationale: "业务理解应该在最前面，先明确目标再进行数据处理。", isCorrect: false },
+                    { text: "业务理解 → 数据理解 → 数据准备 → 建模 → 评估 → 部署", rationale: "这是CRISP-DM的6个标准阶段顺序，以业务目标驱动整个分析流程。", isCorrect: true },
+                    { text: "数据准备 → 建模 → 评估 → 业务理解 → 数据理解 → 部署", rationale: "顺序完全错乱，业务理解与数据理解是分析工作的起点。", isCorrect: false },
+                    { text: "业务理解 → 建模 → 数据准备 → 评估 → 数据理解 → 部署", rationale: "数据准备必须在建模之前完成，数据理解也应在数据准备之前。", isCorrect: false }
+                ]
+            },
+            {
+                question: "RFM模型中三个字母分别代表什么含义？",
+                answerOptions: [
+                    { text: "R=注册时间(Register), F=频率(Frequency), M=金额(Money)", rationale: "R不是注册时间，而是最近一次消费时间(Recency)。", isCorrect: false },
+                    { text: "R=最近消费(Recency), F=消费频率(Frequency), M=消费金额(Monetary)", rationale: "RFM通过这三个维度对客户价值进行立体评估和分层。", isCorrect: true },
+                    { text: "R=留存(Retention), F=反馈(Feedback), M=市场(Market)", rationale: "RFM是客户价值分析的经典模型，与留存、反馈、市场无关。", isCorrect: false },
+                    { text: "R=排名(Ranking), F=预测(Forecast), M=建模(Modeling)", rationale: "RFM是描述性客户分群模型，不涉及排名或预测功能。", isCorrect: false }
+                ]
+            },
+            {
+                question: "以下哪种方法属于无监督学习？",
+                answerOptions: [
+                    { text: "逻辑回归(Logistic Regression)", rationale: "逻辑回归属于监督学习，需要带标签的训练数据。", isCorrect: false },
+                    { text: "K-Means聚类", rationale: "K-Means不需要标签数据，通过样本间距离自动发现分组结构，属于无监督学习。", isCorrect: true },
+                    { text: "随机森林(Random Forest)", rationale: "随机森林属于监督学习的集成方法，需要有标签数据。", isCorrect: false },
+                    { text: "XGBoost", rationale: "XGBoost是有监督的梯度提升算法，需要目标变量。", isCorrect: false }
+                ]
+            },
+            {
+                question: "关联规则分析中，'置信度(Confidence)'的准确定义是什么？",
+                answerOptions: [
+                    { text: "规则在整个数据集中出现的概率", rationale: "这是支持度(Support)的定义，即P(A∩B)。", isCorrect: false },
+                    { text: "购买了A的客户中，同时也购买了B的概率", rationale: "置信度 = P(B|A) = P(A∩B)/P(A)，衡量规则的可靠性。", isCorrect: true },
+                    { text: "规则的实用性相对于随机概率的倍数", rationale: "这是提升度(Lift)的定义，即P(B|A)/P(B)。", isCorrect: false },
+                    { text: "模型预测正确的样本占总样本的比例", rationale: "这是分类模型的准确率(Accuracy)，不是关联规则指标。", isCorrect: false }
+                ]
+            },
+            {
+                question: "训练集表现很好但测试集表现差，这种现象叫做什么？",
+                answerOptions: [
+                    { text: "欠拟合(Underfitting)", rationale: "欠拟合是指模型在训练集和测试集上表现都差，模型过于简单。", isCorrect: false },
+                    { text: "过拟合(Overfitting)", rationale: "过拟合意味着模型过度学习了训练数据中的噪声，泛化能力差。可通过正则化、交叉验证等方法缓解。", isCorrect: true },
+                    { text: "特征缺失(Feature Missing)", rationale: "特征缺失是数据质量问题，不是描述模型泛化能力的术语。", isCorrect: false },
+                    { text: "数据泄露(Data Leakage)", rationale: "数据泄露是指训练数据中包含了不应有的信息，是原因之一但不是现象名称。", isCorrect: false }
+                ]
+            },
+            {
+                question: "每年12月销量都明显上升，这种模式属于时间序列的什么成分？",
+                answerOptions: [
+                    { text: "趋势成分(Trend)", rationale: "趋势是指长期上升或下降的方向性变化，而非周期性波动。", isCorrect: false },
+                    { text: "季节性成分(Seasonality)", rationale: "季节性是指在固定时间间隔内重复出现的模式，如每年12月的销售高峰。", isCorrect: true },
+                    { text: "随机成分(Residual/Noise)", rationale: "随机成分是不可预测的随机波动，不包含规律性。", isCorrect: false },
+                    { text: "周期性成分(Cyclical)", rationale: "周期性是指非固定周期的波动（如经济周期），与固定日历周期的季节性是不同概念。", isCorrect: false }
+                ]
+            },
+            {
+                question: "A/B测试中p值(p-value)小于0.05通常意味着什么？",
+                answerOptions: [
+                    { text: "实验组一定比对照组好", rationale: "p值只能说明统计显著性，不能证明实际效果的大小或商业价值。", isCorrect: false },
+                    { text: "实验组和对照组的差异在统计上显著，不太可能是随机因素导致", rationale: "p<0.05意味着在原假设成立的前提下，观察到当前结果的概率小于5%，通常拒绝原假设。", isCorrect: true },
+                    { text: "样本量不够大，需要增加样本", rationale: "p值大小与样本量有关，但p<0.05通常说明样本量足够检测到差异。", isCorrect: false },
+                    { text: "实验设计有缺陷，需要重新设计", rationale: "p<0.05本身不说明实验设计问题，而是说明结果具有统计显著性。", isCorrect: false }
+                ]
+            },
+            {
+                question: "以下哪个指标最适合评估二分类模型的整体区分能力？",
+                answerOptions: [
+                    { text: "准确率(Accuracy)", rationale: "类别不均衡时准确率可能误导（如99%负样本，全判负也有99%准确率）。", isCorrect: false },
+                    { text: "AUC-ROC", rationale: "AUC-ROC衡量模型在不同阈值下的整体排序能力，不受类别不均衡影响，取值范围0.5~1。", isCorrect: true },
+                    { text: "均方误差(MSE)", rationale: "MSE主要用于回归问题，不适合评估分类模型。", isCorrect: false },
+                    { text: "决定系数R²", rationale: "R²是回归模型的评估指标，表示模型对因变量变异的解释程度。", isCorrect: false }
+                ]
+            },
+            {
+                question: "生成式AI在数据分析中的合理定位是什么？",
+                answerOptions: [
+                    { text: "完全替代数据分析师的所有工作", rationale: "AI目前是辅助工具，不能完全替代人类的分析判断和业务理解。", isCorrect: false },
+                    { text: "辅助生成分析代码、自动撰写报告初稿、通过自然语言查询数据", rationale: "生成式AI可以在代码生成、报告撰写、智能问数等方面提升分析效率，但仍需人工审核。", isCorrect: true },
+                    { text: "自动保证分析结果100%正确", rationale: "AI生成的结果可能包含幻觉或错误，需要人工验证和校正。", isCorrect: false },
+                    { text: "只能处理结构化数据，不能处理文本", rationale: "生成式AI的核心优势之一就是处理和理解自然语言文本。", isCorrect: false }
+                ]
+            },
+            {
+                question: "维度建模中事实表与维度表的关系呈现为什么结构？",
+                answerOptions: [
+                    { text: "网状结构——事实表和维度表多对多关联", rationale: "虽然业务上存在多对多关系，但经典的维度建模通过星型模型将关系简化。", isCorrect: false },
+                    { text: "星型结构——事实表在中心，维度表围绕事实表通过外键关联", rationale: "星型模型是维度建模的核心结构，事实表包含各维度表的外键和度量值，便于OLAP查询。", isCorrect: true },
+                    { text: "链式结构——表与表之间首尾相连", rationale: "链式结构不是维度建模的标准形式，不利于多维分析。", isCorrect: false },
+                    { text: "树形结构——一个根表下挂多个子表", rationale: "维度建模不采用树形结构，而是以事实表为中心的放射状星型结构。", isCorrect: false }
+                ]
+            }
+        ]};
+
+        var questionTextEl = document.getElementById('questionText');
+        var answerOptionsEl = document.getElementById('answerOptions');
+        var nextButton = document.getElementById('nextButton');
+        var progressBar = document.getElementById('progressBar');
+        var questionCounterEl = document.getElementById('questionCounter');
+        var resultsWrap = document.getElementById('resultsWrap');
+        var quizHeader = document.getElementById('quizHeader');
+        var quizBody = document.getElementById('quizBody');
+        var quizFooter = document.getElementById('quizFooter');
+        var scoreTextEl = document.getElementById('scoreText');
+        var scoreCommentEl = document.getElementById('scoreComment');
+        var restartButton = document.getElementById('restartButton');
+
+        var currentQuestionIndex = 0;
+        var score = 0;
+        var answerSelected = false;
+
+        function loadQuestion(index) {
+            answerSelected = false;
+            nextButton.style.display = 'none';
+            var q = quizData.questions[index];
+            questionTextEl.textContent = (index + 1) + '. ' + q.question;
+            questionCounterEl.textContent = (index + 1) + ' / ' + quizData.questions.length;
+
+            answerOptionsEl.innerHTML = '';
+            q.answerOptions.forEach(function(opt, i) {
+                var btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerHTML = '<span class="option-letter">' + String.fromCharCode(65 + i) + '</span>' + opt.text;
+                btn.addEventListener('click', function() { selectAnswer(i); });
+                answerOptionsEl.appendChild(btn);
+
+                var rDiv = document.createElement('div');
+                rDiv.className = 'rationale';
+                rDiv.id = 'rationale-' + i;
+                rDiv.textContent = opt.rationale;
+                answerOptionsEl.appendChild(rDiv);
+            });
+
+            progressBar.style.width = (index / quizData.questions.length * 100) + '%';
+        }
+
+        function selectAnswer(index) {
+            if (answerSelected) return;
+            answerSelected = true;
+
+            var q = quizData.questions[currentQuestionIndex];
+            var btns = document.querySelectorAll('.option-btn');
+
+            btns.forEach(function(btn, i) {
+                btn.classList.add('disabled');
+                var rationale = document.getElementById('rationale-' + i);
+                if (q.answerOptions[i].isCorrect) {
+                    btn.classList.add('correct');
+                    rationale.classList.add('correct', 'show');
+                } else if (i === index) {
+                    btn.classList.add('incorrect');
+                    rationale.classList.add('incorrect', 'show');
+                }
+            });
+
+            if (q.answerOptions[index].isCorrect) score++;
+            nextButton.style.display = 'inline-flex';
+        }
+
+        function showResults() {
+            quizHeader.style.display = 'none';
+            quizBody.style.display = 'none';
+            quizFooter.style.display = 'none';
+            resultsWrap.style.display = 'block';
+
+            var total = quizData.questions.length;
+            var pct = Math.round(score / total * 100);
+            scoreTextEl.textContent = score + ' / ' + total;
+            if (pct >= 90) scoreCommentEl.textContent = '优秀！你对数据挖掘知识掌握得非常好！';
+            else if (pct >= 70) scoreCommentEl.textContent = '良好！继续加油，还有提升空间！';
+            else if (pct >= 50) scoreCommentEl.textContent = '还需要加强学习，建议回顾教材相关章节。';
+            else scoreCommentEl.textContent = '建议从头系统学习教材内容，打好基础是关键。';
+            progressBar.style.width = '100%';
+        }
+
+        function restart() {
+            currentQuestionIndex = 0;
+            score = 0;
+            quizHeader.style.display = '';
+            quizBody.style.display = '';
+            quizFooter.style.display = '';
+            resultsWrap.style.display = 'none';
+            loadQuestion(0);
+        }
+
+        nextButton.addEventListener('click', function() {
+            currentQuestionIndex++;
+            if (currentQuestionIndex < quizData.questions.length) {
+                loadQuestion(currentQuestionIndex);
+            } else {
+                showResults();
+            }
+        });
+
+        restartButton.addEventListener('click', restart);
+        loadQuestion(0);
+    </script>
+</body>
+</html>
