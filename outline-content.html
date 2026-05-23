@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>在线教材大纲 - 数据挖掘与分析</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-deep: #0b1622;
+            --bg-surface: #141f2e;
+            --bg-card: #1a2a3d;
+            --gold: #c9a96e;
+            --gold-light: #dcc090;
+            --gold-dim: #8b7348;
+            --text-primary: #e8e0d0;
+            --text-secondary: #a09888;
+            --text-muted: #6b6560;
+            --border: #1e3048;
+            --border-gold: rgba(201,169,110,0.2);
+            --radius: 14px;
+            --badge1: rgba(124,184,216,0.12); --bd1: rgba(124,184,216,0.25); --c1: #7cb8d8;
+            --badge2: rgba(104,200,160,0.12); --bd2: rgba(104,200,160,0.25); --c2: #68c8a0;
+            --badge3: rgba(212,160,96,0.12); --bd3: rgba(212,160,96,0.25); --c3: #d4a060;
+            --badge4: rgba(180,144,208,0.12); --bd4: rgba(180,144,208,0.25); --c4: #b490d0;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background: var(--bg-deep);
+            background-image: radial-gradient(ellipse at 50% 0%, rgba(201,169,110,0.03) 0%, transparent 50%);
+            color: var(--text-primary);
+            line-height: 1.7;
+            padding: 0 0 2rem;
+        }
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 1.5rem; }
+
+        /* Hero */
+        .hero {
+            background: linear-gradient(180deg, #111d2e 0%, #0d1825 100%);
+            border-bottom: 1px solid var(--border-gold);
+            padding: 2.5rem 1.5rem;
+            text-align: center;
+            margin-bottom: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        .hero::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            opacity: 0.03;
+            background-image: radial-gradient(circle, #c9a96e 1px, transparent 1px);
+            background-size: 22px 22px;
+            pointer-events: none;
+        }
+        .hero h1 {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 2rem;
+            font-weight: 900;
+            background: linear-gradient(180deg, #e8d5a3 0%, #c9a96e 40%, #a07838 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 3px;
+            position: relative;
+            z-index: 1;
+        }
+        .hero p {
+            color: var(--text-secondary);
+            margin-top: 6px;
+            font-size: 0.95rem;
+            letter-spacing: 2px;
+            position: relative;
+            z-index: 1;
+        }
+        .meta-row {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 1rem;
+            position: relative;
+            z-index: 1;
+        }
+        .meta-chip {
+            background: rgba(201,169,110,0.08);
+            border: 1px solid rgba(201,169,110,0.2);
+            color: var(--gold-dim);
+            padding: 5px 14px;
+            border-radius: 50px;
+            font-size: 0.82rem;
+            letter-spacing: 0.5px;
+        }
+
+        /* Stats */
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 2rem;
+        }
+        .stat {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 1.3rem 0.8rem;
+            text-align: center;
+            transition: all 0.35s ease;
+        }
+        .stat:hover { border-color: var(--border-gold); transform: translateY(-2px); }
+        .stat .num {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 1.8rem;
+            font-weight: 900;
+            background: linear-gradient(180deg, #e8d5a3, #c9a96e);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .stat .label { color: var(--text-muted); margin-top: 4px; font-size: 0.82rem; letter-spacing: 0.5px; }
+
+        /* Outline */
+        .outline { display: grid; gap: 16px; margin-bottom: 1rem; }
+
+        /* Part separator */
+        .part-sep {
+            position: relative;
+            background: var(--bg-surface);
+            border: 1px dashed var(--border-gold);
+            border-radius: var(--radius);
+            padding: 1.2rem 1.5rem;
+            margin: 0.5rem 0;
+        }
+        .part-sep h3 {
+            font-family: 'Noto Serif SC', serif;
+            color: var(--gold-light);
+            font-size: 1.05rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        .part-sep p { margin-top: 4px; color: var(--text-secondary); font-size: 0.88rem; }
+        .flag {
+            display: inline-block;
+            margin-right: 8px;
+            padding: 4px 12px;
+            border-radius: 50px;
+            font-size: 0.76rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            background: rgba(201,169,110,0.1);
+            color: var(--gold-dim);
+            border: 1px solid rgba(201,169,110,0.2);
+        }
+
+        /* Chapter */
+        .chapter {
+            border-left: 3px solid var(--gold-dim);
+            background: var(--bg-card);
+            border-radius: 0 10px 10px 0;
+            overflow: hidden;
+            margin-bottom: 8px;
+            transition: all 0.35s ease;
+        }
+        .chapter:hover { border-left-color: var(--gold); box-shadow: 0 4px 20px rgba(0,0,0,0.2); }
+        .chapter-title {
+            padding: 0.8rem 1.2rem;
+            font-family: 'Noto Serif SC', serif;
+            font-weight: 700;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .chapter-items { padding: 0 1.2rem 0.9rem; }
+        .chapter-items ul { list-style: none; display: grid; gap: 5px; }
+        .chapter-items li {
+            padding: 0.5rem 0.8rem;
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 0.84rem;
+            color: var(--text-secondary);
+        }
+
+        /* Pills */
+        .pill {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 50px;
+            font-size: 0.74rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            font-family: 'Noto Sans SC', sans-serif;
+        }
+        .pill.basic { background: var(--badge1); color: var(--c1); border: 1px solid var(--bd1); }
+        .pill.insight { background: var(--badge2); color: var(--c2); border: 1px solid var(--bd2); }
+        .pill.predict { background: var(--badge3); color: var(--c3); border: 1px solid var(--bd3); }
+        .pill.decision { background: var(--badge4); color: var(--c4); border: 1px solid var(--bd4); }
+        .pill.ai { background: rgba(208,112,96,0.1); color: #d07060; border: 1px solid rgba(208,112,96,0.2); }
+        .pill.practice { background: rgba(201,169,110,0.1); color: var(--gold-dim); border: 1px solid rgba(201,169,110,0.2); }
+
+        /* Capability */
+        .capability {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            overflow: hidden;
+            margin-top: 1.5rem;
+        }
+        .cap-header {
+            padding: 1.2rem 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+        .cap-header h3 { font-family: 'Noto Serif SC', serif; color: var(--gold-light); font-size: 1.05rem; letter-spacing: 1px; }
+        .cap-header p { color: var(--text-muted); font-size: 0.84rem; margin-top: 4px; }
+        .capability-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            padding: 1.2rem;
+        }
+        .cap-item {
+            background: var(--bg-surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 1rem;
+            transition: all 0.3s;
+        }
+        .cap-item:hover { border-color: var(--border-gold); }
+        .cap-item h4 {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 0.95rem;
+            color: var(--gold-light);
+            margin-bottom: 6px;
+            letter-spacing: 0.5px;
+        }
+        .cap-item p { color: var(--text-muted); font-size: 0.82rem; line-height: 1.6; }
+
+        .footer-tip { margin-top: 1.2rem; text-align: center; color: var(--text-muted); font-size: 0.82rem; letter-spacing: 0.5px; }
+
+        @media (max-width: 900px) { .capability-grid { grid-template-columns: 1fr 1fr; } .stats { grid-template-columns: 1fr 1fr; } }
+        @media (max-width: 520px) { .capability-grid { grid-template-columns: 1fr; } .stats { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <section class="hero">
+        <h1>在线教材大纲</h1>
+        <p>以CRISP-DM为主线，融合AI与生成式技术，"数据认知→业务洞察→预测建模→智能决策"四阶段递进</p>
+        <div class="meta-row">
+            <span class="meta-chip">12章 · 4大模块 · 40+实战</span>
+            <span class="meta-chip">更新：2026</span>
+            <span class="meta-chip">四部分递进式</span>
+        </div>
+    </section>
+
+    <div class="stats">
+        <div class="stat"><div class="num">12</div><div class="label">章节</div></div>
+        <div class="stat"><div class="num">4</div><div class="label">学习模块</div></div>
+        <div class="stat"><div class="num">40+</div><div class="label">实战案例</div></div>
+        <div class="stat"><div class="num">AI+</div><div class="label">AI全面赋能</div></div>
+    </div>
+
+    <div class="outline">
+        <!-- Part 1 -->
+        <div class="part-sep">
+            <span class="flag">第一部分</span>
+            <h3>商业数据挖掘基础——从数据认知到建模能力（第1-3章）</h3>
+            <p>夯实数据认知、预处理与建模基础，引入数据治理与维度建模等企业级实践。</p>
+        </div>
+
+        <div class="chapter">
+            <div class="chapter-title"><span class="pill basic">基础</span> 第1章 数字化时代的商业数据挖掘</div>
+            <div class="chapter-items"><ul>
+                <li>1.1 数据驱动的商业模式创新</li>
+                <li>1.2 商业数据挖掘流程与CRISP-DM模型</li>
+                <li>1.3 敏捷分析与智能决策闭环</li>
+            </ul></div>
+        </div>
+
+        <div class="chapter">
+            <div class="chapter-title"><span class="pill basic">基础</span> 第2章 商业数据认知与数据架构</div>
+            <div class="chapter-items"><ul>
+                <li>2.1 商业数据类型与业务口径</li>
+                <li>2.2 维度建模与指标体系</li>
+                <li>2.3 数据质量管理与数据治理</li>
+                <li><span class="pill practice">实战</span> 构建企业经营分析数据模型</li>
+            </ul></div>
+        </div>
+
+        <div class="chapter">
+            <div class="chapter-title"><span class="pill basic">基础</span> 第3章 数据预处理、特征工程与建模基础</div>
+            <div class="chapter-items"><ul>
+                <li>3.1 数据清洗：缺失、异常与重复处理</li>
+                <li>3.2 变量转换、离散化与特征构造</li>
+                <li>3.3 分类、回归、聚类与关联分析概述</li>
+                <li>3.4 模型评价与业务解释</li>
+                <li><span class="pill practice">实战</span> 多源异构数据的自动化处理</li>
+            </ul></div>
+        </div>
+
+        <!-- Part 2 -->
+        <div class="part-sep">
+            <span class="flag">第二部分</span>
+            <h3>描述性分析与商业洞察——让数据"开口说话"（第4-5章）</h3>
+            <p>聚焦可视化分析、经营驾驶舱、客户细分与精准营销等核心业务场景。</p>
+        </div>
+
+        <div class="chapter" style="border-left-color:#68c8a0;">
+            <div class="chapter-title"><span class="pill insight">洞察</span> 第4章 可视化分析与经营驾驶舱</div>
+            <div class="chapter-items"><ul>
+                <li>4.1 图表选择与数据叙事</li>
+                <li>4.2 KPI监控体系设计</li>
+                <li>4.3 仪表盘与自助分析</li>
+                <li><span class="pill practice">实战</span> 搭建动态销售管理驾驶舱</li>
+            </ul></div>
+        </div>
+
+        <div class="chapter" style="border-left-color:#68c8a0;">
+            <div class="chapter-title"><span class="pill insight">洞察</span> 第5章 客户细分与精准营销</div>
+            <div class="chapter-items"><ul>
+                <li>5.1 RFM模型与客户价值分层</li>
+                <li>5.2 聚类分析与市场定位</li>
+                <li>5.3 关联规则与购物篮分析</li>
+                <li><span class="pill practice">实战</span> 客户分群与商品组合优化</li>
+            </ul></div>
+        </div>
+
+        <!-- Part 3 -->
+        <div class="part-sep">
+            <span class="flag">第三部分</span>
+            <h3>预测性分析与风险预警——从历史数据预判未来（第6-8章）</h3>
+            <p>深入讲解客户流失预警、需求预测、信用评分与金融风控等企业核心应用。</p>
+        </div>
+
+        <div class="chapter" style="border-left-color:#d4a060;">
+            <div class="chapter-title"><span class="pill predict">预测</span> 第6章 客户流失预警与生命周期价值管理</div>
+            <div class="chapter-items"><ul>
+                <li>6.1 客户生命周期价值分析</li>
+                <li>6.2 分类模型与流失预测</li>
+                <li>6.3 生存分析与客户留存</li>
+                <li><span class="pill practice">实战</span> 构建用户流失预警模型</li>
+            </ul></div>
+        </div>
+
+        <div class="chapter" style="border-left-color:#d4a060;">
+            <div class="chapter-title"><span class="pill predict">预测</span> 第7章 需求预测与库存优化</div>
+            <div class="chapter-items"><ul>
+                <li>7.1 时间序列分析基础</li>
+                <li>7.2 预测误差评估与模型选择</li>
+                <li>7.3 库存优化与补货决策</li>
+                <li><span class="pill practice">实战</span> 快消品销量预测与智能补货</li>
+            </ul></div>
+        </div>
+
+        <div class="chapter" style="border-left-color:#d4a060;">
+            <div class="chapter-title"><span class="pill predict">预测</span> 第8章 商业风险识别与金融风控</div>
+            <div class="chapter-items"><ul>
+                <li>8.1 信用评分卡模型</li>
+                <li>8.2 异常检测与反欺诈规则</li>
+                <li>8.3 风控策略与模型解释</li>
+                <li><span class="pill practice">实战</span> 贷前准入自动化策略</li>
+            </ul></div>
+        </div>
+
+        <!-- Part 4 -->
+        <div class="part-sep">
+            <span class="flag">第四部分</span>
+            <h3>智能决策与综合应用——AI赋能数据分析新时代（第9-12章）</h3>
+            <p>深度融合文本挖掘、实验设计、生成式AI辅助分析与行业综合实战。</p>
+        </div>
+
+        <div class="chapter" style="border-left-color:#b490d0;">
+            <div class="chapter-title"><span class="pill decision">决策</span> 第9章 文本挖掘、舆情分析与社交网络</div>
+            <div class="chapter-items"><ul>
+                <li>9.1 非结构化数据处理流程</li>
+                <li>9.2 情感分析与主题建模</li>
+                <li>9.3 社会网络分析与KOL识别</li>
+                <li><span class="pill practice">实战</span> 用户评论分析与口碑传播识别</li>
+            </ul></div>
+        </div>
+
+        <div class="chapter" style="border-left-color:#b490d0;">
+            <div class="chapter-title"><span class="pill decision">决策</span> 第10章 实验设计与运营优化</div>
+            <div class="chapter-items"><ul>
+                <li>10.1 假设检验与管理决策</li>
+                <li>10.2 A/B测试与样本量估算</li>
+                <li>10.3 流程挖掘与效率优化</li>
+                <li><span class="pill practice">实战</span> 营销活动效果验证与流程优化</li>
+            </ul></div>
+        </div>
+
+        <div class="chapter" style="border-left-color:#b490d0;">
+            <div class="chapter-title"><span class="pill ai">AI赋能</span> 第11章 生成式AI与商业智能决策</div>
+            <div class="chapter-items"><ul>
+                <li>11.1 生成式AI辅助数据分析</li>
+                <li>11.2 自动化报告与智能问数</li>
+                <li>11.3 模型可解释性与AI治理</li>
+                <li><span class="pill practice">实战</span> 基于AI助手的商业分析报告生成</li>
+            </ul></div>
+        </div>
+
+        <div class="chapter" style="border-left-color:#b490d0;">
+            <div class="chapter-title"><span class="pill ai">综合实战</span> 第12章 行业综合实战：从数据到决策</div>
+            <div class="chapter-items"><ul>
+                <li>12.1 零售与电商用户增长分析</li>
+                <li>12.2 供应链智能决策</li>
+                <li>12.3 金融风控综合案例</li>
+                <li><span class="pill practice">实战</span> 完成一项端到端商业数据挖掘项目</li>
+            </ul></div>
+        </div>
+    </div>
+
+    <!-- Capability Matrix -->
+    <div class="capability">
+        <div class="cap-header">
+            <h3>能力进阶矩阵</h3>
+            <p>从数据认知到智能决策，四大能力阶梯</p>
+        </div>
+        <div class="capability-grid">
+            <div class="cap-item">
+                <h4>数据认知</h4>
+                <p>CRISP-DM流程、维度建模、指标体系、数据治理与质量管理</p>
+            </div>
+            <div class="cap-item">
+                <h4>业务洞察</h4>
+                <p>可视化分析、RFM分层、聚类分群、关联规则、数据叙事</p>
+            </div>
+            <div class="cap-item">
+                <h4>预测建模</h4>
+                <p>分类与回归、时间序列预测、信用评分卡、异常检测</p>
+            </div>
+            <div class="cap-item">
+                <h4>智能决策</h4>
+                <p>文本挖掘、A/B测试、生成式AI、自动化报告、AI治理</p>
+            </div>
+        </div>
+    </div>
+
+    <p class="footer-tip">以上大纲为初稿，内容将根据教材编写进展持续更新与优化。</p>
+
+</div>
+</body>
+</html>
